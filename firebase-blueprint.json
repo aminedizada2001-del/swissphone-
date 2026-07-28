@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Store product item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "series": { "type": "string" },
+        "category": { "type": "string" },
+        "priceDA": { "type": "number" },
+        "image": { "type": "string" },
+        "description": { "type": "string" },
+        "inStock": { "type": "boolean" },
+        "badge": { "type": "string" }
+      },
+      "required": ["id", "title", "priceDA"]
+    },
+    "RepairService": {
+      "title": "RepairService",
+      "description": "Store maintenance/repair service",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "iconName": { "type": "string" },
+        "time": { "type": "string" },
+        "price": { "type": "string" }
+      },
+      "required": ["id", "title"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Store contact and admin settings",
+      "type": "object",
+      "properties": {
+        "storeInfo": { "type": "object" },
+        "socialLinks": { "type": "object" },
+        "adminPassword": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of store products"
+    },
+    "/services/{serviceId}": {
+      "schema": "RepairService",
+      "description": "Collection of repair services"
+    },
+    "/settings/store": {
+      "schema": "SiteSettings",
+      "description": "Document holding site and store settings"
+    }
+  }
+}

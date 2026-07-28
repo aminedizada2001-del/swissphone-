@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0turn;
+}
+
+@keyframes border-spin {
+  to {
+    --border-angle: 1turn;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .animated-golden-border {
+    border: 1.5px solid transparent;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(#FFFDF9, #FFFDF9), conic-gradient(from var(--border-angle), #EAD8B1 0%, #C5A059 25%, #EAD8B1 50%, #C5A059 75%, #EAD8B1 100%);
+    animation: border-spin 4s linear infinite;
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "SWISS PHONE",
+  "description": "Swiss Phone - L'Excellence Curated. Boutique de luxe d'iPhones et smartphones au Cœur d'Alger.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
