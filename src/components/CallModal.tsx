@@ -27,16 +27,17 @@ export const CallModal: React.FC<CallModalProps> = ({ product, onClose }) => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 1 }}
+      transition={{ duration: 0 }}
       className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
     >
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 1, scale: 1 }}
         animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.2 }}
+        exit={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0 }}
         className="bg-[#FAF8F5] border-2 border-[#C5A059] rounded-3xl max-w-md w-full overflow-hidden shadow-2xl relative"
       >
         {/* Modal Header */}

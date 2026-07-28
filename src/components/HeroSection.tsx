@@ -17,6 +17,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 }) => {
   const [isSocialOpen, setIsSocialOpen] = useState(false);
   const [isInstagramModalOpen, setIsInstagramModalOpen] = useState(false);
+  const [heroBannerImg, setHeroBannerImg] = useState<string>(exactHeroMatchImg);
   const [socialLinks, setSocialLinks] = useState({
     whatsapp: '213550560105',
     googleMaps: 'https://maps.app.goo.gl/YEqNZZ3UNNDW8za86',
@@ -30,6 +31,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        if (parsed.landingImages?.heroBanner) {
+          setHeroBannerImg(parsed.landingImages.heroBanner);
+        }
         if (parsed.socialLinks) {
           if (!parsed.socialLinks.whatsapp || parsed.socialLinks.whatsapp === '213550580105') {
             parsed.socialLinks.whatsapp = '213550560105';
@@ -42,14 +46,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     }
 
     const unsubscribe = subscribeSettings((remoteSettings) => {
-      if (remoteSettings && remoteSettings.socialLinks) {
-        setSocialLinks({
-          whatsapp: (!remoteSettings.socialLinks.whatsapp || remoteSettings.socialLinks.whatsapp === '213550580105') ? '213550560105' : remoteSettings.socialLinks.whatsapp,
-          googleMaps: remoteSettings.socialLinks.googleMaps || 'https://maps.app.goo.gl/YEqNZZ3UNNDW8za86',
-          instagram: (!remoteSettings.socialLinks.instagram || remoteSettings.socialLinks.instagram === 'https://instagram.com') ? 'https://www.instagram.com/swissphone09?igsh=Njh4bWNmeG95bTE4' : remoteSettings.socialLinks.instagram,
-          instagram2: remoteSettings.socialLinks.instagram2 || 'https://www.instagram.com/swiss_phone09?igsh=dDgzczk3aDdyOTBq',
-          tiktok: (!remoteSettings.socialLinks.tiktok || remoteSettings.socialLinks.tiktok === 'https://tiktok.com' || remoteSettings.socialLinks.tiktok === 'https://www.tiktok.com/@abdou.swissphone') ? 'https://www.tiktok.com/@abdou.swissphone?_r=1&_t=ZS-98PuvrYXCk9' : remoteSettings.socialLinks.tiktok
-        });
+      if (remoteSettings) {
+        if (remoteSettings.landingImages?.heroBanner) {
+          setHeroBannerImg(remoteSettings.landingImages.heroBanner);
+        }
+        if (remoteSettings.socialLinks) {
+          setSocialLinks({
+            whatsapp: (!remoteSettings.socialLinks.whatsapp || remoteSettings.socialLinks.whatsapp === '213550580105') ? '213550560105' : remoteSettings.socialLinks.whatsapp,
+            googleMaps: remoteSettings.socialLinks.googleMaps || 'https://maps.app.goo.gl/YEqNZZ3UNNDW8za86',
+            instagram: (!remoteSettings.socialLinks.instagram || remoteSettings.socialLinks.instagram === 'https://instagram.com') ? 'https://www.instagram.com/swissphone09?igsh=Njh4bWNmeG95bTE4' : remoteSettings.socialLinks.instagram,
+            instagram2: remoteSettings.socialLinks.instagram2 || 'https://www.instagram.com/swiss_phone09?igsh=dDgzczk3aDdyOTBq',
+            tiktok: (!remoteSettings.socialLinks.tiktok || remoteSettings.socialLinks.tiktok === 'https://tiktok.com' || remoteSettings.socialLinks.tiktok === 'https://www.tiktok.com/@abdou.swissphone') ? 'https://www.tiktok.com/@abdou.swissphone?_r=1&_t=ZS-98PuvrYXCk9' : remoteSettings.socialLinks.tiktok
+          });
+        }
       }
     });
 
@@ -68,7 +77,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Background Exact Match Image */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img
-          src={exactHeroMatchImg}
+          src={heroBannerImg}
           alt="SWISS PHONE Header Banner"
           decoding="async"
           className="w-full h-full object-cover object-center brightness-105 contrast-105"

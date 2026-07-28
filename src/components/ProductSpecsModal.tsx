@@ -35,23 +35,24 @@ export const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 1 }}
+      transition={{ duration: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal Content */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 1, scale: 1 }}
         animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.2 }}
+        exit={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0 }}
         className="relative w-[90%] max-w-[320px] bg-[#FAF8F5] rounded-3xl shadow-2xl overflow-hidden"
         dir="rtl"
       >

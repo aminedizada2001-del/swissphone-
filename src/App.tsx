@@ -108,13 +108,13 @@ export default function App() {
   const handleScrollToProducts = () => {
     const el = document.getElementById('products-section');
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      el.scrollIntoView({ behavior: 'auto' });
     }
   };
 
   if (isAdminLoggedIn) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+      <motion.div initial={{ opacity: 1 }} animate={{ opacity: 1 }} transition={{ duration: 0 }}>
         <AdminDashboard
           products={products}
           services={services}
@@ -135,6 +135,7 @@ export default function App() {
             initial={{ opacity: 0, y: -20, x: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: -20, x: '-50%' }}
+            transition={{ duration: 0 }}
             className="fixed top-5 left-1/2 z-50 bg-[#1C1713] text-[#F3E3C3] border border-[#C5A059] py-2.5 px-5 rounded-full shadow-2xl flex items-center gap-2"
           >
             <div className="w-5 h-5 rounded-full bg-[#C5A059] text-black flex items-center justify-center font-bold text-xs">
@@ -147,9 +148,9 @@ export default function App() {
 
       {/* Main Page Layout matching screenshots */}
       <motion.main 
-        initial={{ opacity: 0, y: 10 }} 
+        initial={{ opacity: 1, y: 0 }} 
         animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0 }}
         className="w-full max-w-[440px] bg-[#FAF8F5] shadow-2xl shadow-black/40 overflow-hidden min-h-screen relative"
       >
         {/* 1. Hero Section */}

@@ -16,6 +16,12 @@ export interface SiteSettings {
     instagram2?: string;
     tiktok: string;
   };
+  landingImages?: {
+    heroBanner?: string;
+    certifiedIphones?: string;
+    originalSeal?: string;
+    leatherCases?: string;
+  };
 }
 
 // Realtime listener for products

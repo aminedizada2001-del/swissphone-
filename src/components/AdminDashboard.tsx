@@ -40,14 +40,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     instagram2: 'https://www.instagram.com/swiss_phone09?igsh=dDgzczk3aDdyOTBq',
     tiktok: 'https://www.tiktok.com/@abdou.swissphone?_r=1&_t=ZS-98PuvrYXCk9'
   });
+  const [landingImages, setLandingImages] = useState({
+    heroBanner: '',
+    certifiedIphones: '',
+    originalSeal: '',
+    leatherCases: ''
+  });
 
   const [openSections, setOpenSections] = useState({
     store: false,
     password: false,
-    social: false
+    social: false,
+    landingImages: false
   });
 
-  const toggleSection = (key: 'store' | 'password' | 'social') => {
+  const toggleSection = (key: 'store' | 'password' | 'social' | 'landingImages') => {
     setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
@@ -142,6 +149,48 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     reader.readAsDataURL(file);
   };
 
+  const handleLandingImageFileChange = (key: 'heroBanner' | 'certifiedIphones' | 'originalSeal' | 'leatherCases', e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          setLandingImages(prev => ({ ...prev, [key]: compressedDataUrl }));
+        }
+        setIsUploadingImage(false);
+      };
+      img.onerror = () => setIsUploadingImage(false);
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   // --- Handlers for Services ---
   const handleEditService = (service: RepairService) => setEditingService(service);
   const handleDeleteService = (id: string) => {
@@ -177,7 +226,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const saved = localStorage.getItem('siteSettings');
     if (saved) {
       try {
-        const { storeInfo: sInfo, adminPassword: aPass, socialLinks: sLinks } = JSON.parse(saved);
+        const { storeInfo: sInfo, adminPassword: aPass, socialLinks: sLinks, landingImages: lImgs } = JSON.parse(saved);
         if (sInfo) {
           if (!sInfo.phone || sInfo.phone.includes('779')) sInfo.phone = '0550 58 01 05';
           setStoreInfo(sInfo);
@@ -197,6 +246,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             sLinks.instagram2 = 'https://www.instagram.com/swiss_phone09?igsh=dDgzczk3aDdyOTBq';
           }
           setSocialLinks(sLinks);
+        }
+        if (lImgs) {
+          setLandingImages(lImgs);
         }
       } catch (e) {
         console.error(e);
@@ -227,6 +279,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           }
           setSocialLinks(s);
         }
+        if (remoteSettings.landingImages) {
+          setLandingImages(remoteSettings.landingImages);
+        }
       }
     });
 
@@ -234,7 +289,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   }, []);
 
   const saveSettings = () => {
-    const data = { storeInfo, adminPassword, socialLinks };
+    const data = { storeInfo, adminPassword, socialLinks, landingImages };
     localStorage.setItem('siteSettings', JSON.stringify(data));
     syncSettingsToFirebase(data);
     setIsSaved(true);
@@ -322,10 +377,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {activeTab === 'products' && (
             <motion.div
               key="tab-products"
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
+              exit={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0 }}
             >
               <motion.button
                 whileTap={{ scale: 0.97 }}
@@ -403,10 +458,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {activeTab === 'services' && (
             <motion.div
               key="tab-services"
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
+              exit={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0 }}
             >
               <motion.button
                 whileTap={{ scale: 0.97 }}
@@ -448,10 +503,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {activeTab === 'settings' && (
             <motion.div
               key="tab-settings"
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
+              exit={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0 }}
               className="space-y-3"
             >
             {/* 1. Store Info Accordion */}
@@ -589,6 +644,117 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <div>
                         <label className="block text-xs font-semibold text-[#8A6A29] mb-1">تيك توك</label>
                         <input placeholder="تيك توك" value={socialLinks.tiktok} onChange={e => setSocialLinks({...socialLinks, tiktok: e.target.value})} className="w-full bg-[#F7F2E8] border border-[#EAD8B1] rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50" dir="ltr" />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* 4. Landing Page Images Accordion */}
+            <div className="bg-[#FFFDF9] rounded-2xl border border-[#EAD8B1] shadow-sm overflow-hidden transition-all">
+              <button
+                type="button"
+                onClick={() => toggleSection('landingImages')}
+                className="w-full p-4 flex items-center justify-between font-bold text-base text-[#1F1A17] hover:bg-[#FAF8F5] transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#F7F2E8] border border-[#EAD8B1] flex items-center justify-center text-[#C5A059]">
+                    <ImageIcon className="w-4 h-4" />
+                  </div>
+                  <span>صور الصفحة الرئيسية (Firebase)</span>
+                </div>
+                <motion.div
+                  animate={{ rotate: openSections.landingImages ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDown className="w-5 h-5 text-[#8A6A29]" />
+                </motion.div>
+              </button>
+              <AnimatePresence initial={false}>
+                {openSections.landingImages && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 pt-1 space-y-4 border-t border-[#EAD8B1]/40">
+                      {/* Hero Banner */}
+                      <div>
+                        <label className="block text-xs font-semibold text-[#8A6A29] mb-1">صورة بنر الهيدر (Hero Banner)</label>
+                        <div className="flex gap-2">
+                          <input
+                            placeholder="https://... أو قم بالرفع"
+                            value={landingImages.heroBanner || ''}
+                            onChange={e => setLandingImages({ ...landingImages, heroBanner: e.target.value })}
+                            className="flex-1 bg-[#F7F2E8] border border-[#EAD8B1] rounded-xl p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50"
+                            dir="ltr"
+                          />
+                          <label className="bg-[#1C1713] text-[#F3E3C3] px-3 rounded-xl border border-[#C5A059]/30 flex items-center justify-center cursor-pointer text-xs font-bold gap-1 shrink-0">
+                            <Upload className="w-3.5 h-3.5 text-[#E6C280]" />
+                            <span>رفع</span>
+                            <input type="file" accept="image/*" onChange={e => handleLandingImageFileChange('heroBanner', e)} className="hidden" />
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* iPhones Certifiés */}
+                      <div>
+                        <label className="block text-xs font-semibold text-[#8A6A29] mb-1">صورة قسم الأصالة 1 (iPhones Certifiés)</label>
+                        <div className="flex gap-2">
+                          <input
+                            placeholder="https://... أو قم بالرفع"
+                            value={landingImages.certifiedIphones || ''}
+                            onChange={e => setLandingImages({ ...landingImages, certifiedIphones: e.target.value })}
+                            className="flex-1 bg-[#F7F2E8] border border-[#EAD8B1] rounded-xl p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50"
+                            dir="ltr"
+                          />
+                          <label className="bg-[#1C1713] text-[#F3E3C3] px-3 rounded-xl border border-[#C5A059]/30 flex items-center justify-center cursor-pointer text-xs font-bold gap-1 shrink-0">
+                            <Upload className="w-3.5 h-3.5 text-[#E6C280]" />
+                            <span>رفع</span>
+                            <input type="file" accept="image/*" onChange={e => handleLandingImageFileChange('certifiedIphones', e)} className="hidden" />
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Original Seal */}
+                      <div>
+                        <label className="block text-xs font-semibold text-[#8A6A29] mb-1">صورة قسم الأصالة 2 (ختم الضمان 100% الأصلي)</label>
+                        <div className="flex gap-2">
+                          <input
+                            placeholder="https://... أو قم بالرفع"
+                            value={landingImages.originalSeal || ''}
+                            onChange={e => setLandingImages({ ...landingImages, originalSeal: e.target.value })}
+                            className="flex-1 bg-[#F7F2E8] border border-[#EAD8B1] rounded-xl p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50"
+                            dir="ltr"
+                          />
+                          <label className="bg-[#1C1713] text-[#F3E3C3] px-3 rounded-xl border border-[#C5A059]/30 flex items-center justify-center cursor-pointer text-xs font-bold gap-1 shrink-0">
+                            <Upload className="w-3.5 h-3.5 text-[#E6C280]" />
+                            <span>رفع</span>
+                            <input type="file" accept="image/*" onChange={e => handleLandingImageFileChange('originalSeal', e)} className="hidden" />
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Leather Cases */}
+                      <div>
+                        <label className="block text-xs font-semibold text-[#8A6A29] mb-1">صورة قسم الأصالة 3 (الإكسسوارات الفاخرة)</label>
+                        <div className="flex gap-2">
+                          <input
+                            placeholder="https://... أو قم بالرفع"
+                            value={landingImages.leatherCases || ''}
+                            onChange={e => setLandingImages({ ...landingImages, leatherCases: e.target.value })}
+                            className="flex-1 bg-[#F7F2E8] border border-[#EAD8B1] rounded-xl p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50"
+                            dir="ltr"
+                          />
+                          <label className="bg-[#1C1713] text-[#F3E3C3] px-3 rounded-xl border border-[#C5A059]/30 flex items-center justify-center cursor-pointer text-xs font-bold gap-1 shrink-0">
+                            <Upload className="w-3.5 h-3.5 text-[#E6C280]" />
+                            <span>رفع</span>
+                            <input type="file" accept="image/*" onChange={e => handleLandingImageFileChange('leatherCases', e)} className="hidden" />
+                          </label>
+                        </div>
                       </div>
                     </div>
                   </motion.div>

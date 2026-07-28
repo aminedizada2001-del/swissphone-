@@ -47,16 +47,17 @@ export const CartModal: React.FC<CartModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div 
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          exit={{ opacity: 1 }}
+          transition={{ duration: 0 }}
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end"
         >
           <motion.div 
-            initial={{ x: '100%' }}
+            initial={{ x: 0 }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+            exit={{ x: 0 }}
+            transition={{ duration: 0 }}
             className="w-full max-w-md bg-[#FAF8F5] h-full flex flex-col shadow-2xl border-l border-[#C5A059]/40"
           >
             {/* Header */}

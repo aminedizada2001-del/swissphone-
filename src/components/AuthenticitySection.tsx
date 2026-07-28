@@ -1,10 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Award, ShieldCheck, Briefcase } from 'lucide-react';
 import goldIphone3D from '../assets/images/gold_iphone_3d_real_1785068896861.jpg';
 import seal3D from '../assets/images/swiss_seal_3d_real_1785068909694.jpg';
 import leatherCases3D from '../assets/images/leather_cases_3d_real_1785068922902.jpg';
+import { subscribeSettings } from '../lib/storeService';
 
 export const AuthenticitySection: React.FC = () => {
+  const [images, setImages] = useState({
+    certifiedIphones: goldIphone3D,
+    originalSeal: seal3D,
+    leatherCases: leatherCases3D
+  });
+
+  useEffect(() => {
+    const saved = localStorage.getItem('siteSettings');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.landingImages) {
+          setImages(prev => ({
+            certifiedIphones: parsed.landingImages.certifiedIphones || prev.certifiedIphones,
+            originalSeal: parsed.landingImages.originalSeal || prev.originalSeal,
+            leatherCases: parsed.landingImages.leatherCases || prev.leatherCases,
+          }));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const unsubscribe = subscribeSettings((remoteSettings) => {
+      if (remoteSettings && remoteSettings.landingImages) {
+        setImages({
+          certifiedIphones: remoteSettings.landingImages.certifiedIphones || goldIphone3D,
+          originalSeal: remoteSettings.landingImages.originalSeal || seal3D,
+          leatherCases: remoteSettings.landingImages.leatherCases || leatherCases3D,
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <section className="w-full bg-[#FAF8F5] pt-1 pb-1 sm:pt-2 sm:pb-2 px-3 sm:px-6">
       <div className="max-w-4xl mx-auto">
@@ -28,7 +65,7 @@ export const AuthenticitySection: React.FC = () => {
             </div>
             <div className="w-full aspect-[5/4] sm:aspect-[3/2] rounded-lg overflow-hidden bg-[#F3ECE0] flex items-center justify-center border border-[#E2CE9F] shadow-inner">
               <img
-                src={goldIphone3D}
+                src={images.certifiedIphones}
                 alt="iPhones Certifiés 3D"
                 className="w-full h-full object-cover rounded-md transition-transform duration-500 hover:scale-110"
                 referrerPolicy="no-referrer"
@@ -46,7 +83,7 @@ export const AuthenticitySection: React.FC = () => {
             </div>
             <div className="w-full aspect-[5/4] sm:aspect-[3/2] rounded-lg overflow-hidden bg-[#FFFDF9] flex items-center justify-center p-1 sm:p-1.5 border border-[#E2CE9F] shadow-inner">
               <img
-                src={seal3D}
+                src={images.originalSeal}
                 alt="Sceau de Garantie Authentique 3D"
                 className="w-full h-full object-contain drop-shadow-lg transition-transform duration-500 hover:scale-115"
                 referrerPolicy="no-referrer"
@@ -64,7 +101,7 @@ export const AuthenticitySection: React.FC = () => {
             </div>
             <div className="w-full aspect-[5/4] sm:aspect-[3/2] rounded-lg overflow-hidden bg-[#F3ECE0] flex items-center justify-center border border-[#E2CE9F] shadow-inner">
               <img
-                src={leatherCases3D}
+                src={images.leatherCases}
                 alt="Accessoires Premium 3D"
                 className="w-full h-full object-cover rounded-md transition-transform duration-500 hover:scale-110"
                 referrerPolicy="no-referrer"
