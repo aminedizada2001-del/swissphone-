@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, ChevronDown, X, MapPin, Instagram } from 'lucide-react';
 import exactHeroMatchImg from '../assets/images/swiss_phone_hero_exact_match_1785069510478.jpg';
-import { subscribeSettings } from '../lib/storeService';
 import { InstagramModal } from './InstagramModal';
 
 interface HeroSectionProps {
@@ -45,7 +44,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       }
     }
 
-    const unsubscribe = subscribeSettings((remoteSettings) => {
+    let unsubscribe = () => {};
+    import('../lib/storeService').then(({ subscribeSettings }) => {
+      unsubscribe = subscribeSettings((remoteSettings) => {
       if (remoteSettings) {
         if (remoteSettings.landingImages?.heroBanner) {
           setHeroBannerImg(remoteSettings.landingImages.heroBanner);
@@ -62,6 +63,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       }
     });
 
+    });
     return () => unsubscribe();
   }, []);
 

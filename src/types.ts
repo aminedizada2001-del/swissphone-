@@ -17,7 +17,7 @@ export interface CartItem {
 export interface Category {
   id: string;
   nameArabic: string;
-  iconName: 'grid' | 'smartphone';
+  iconName: 'grid' | 'smartphone' | 'headphones' | 'wrench' | 'sparkles' | string;
 }
 
 export interface RepairService {

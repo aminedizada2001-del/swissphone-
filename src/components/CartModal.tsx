@@ -1,7 +1,6 @@
 import React from 'react';
 import { X, Trash2, Plus, Minus, ShoppingBag, PhoneCall, CheckCircle2 } from 'lucide-react';
 import { CartItem } from '../types';
-import { motion, AnimatePresence } from 'motion/react';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -44,20 +43,12 @@ export const CartModal: React.FC<CartModalProps> = ({
   };
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && (
-        <motion.div 
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 1 }}
-          transition={{ duration: 0 }}
+        <div 
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end"
         >
-          <motion.div 
-            initial={{ x: 0 }}
-            animate={{ x: 0 }}
-            exit={{ x: 0 }}
-            transition={{ duration: 0 }}
+          <div 
             className="w-full max-w-md bg-[#FAF8F5] h-full flex flex-col shadow-2xl border-l border-[#C5A059]/40"
           >
             {/* Header */}
@@ -165,9 +156,9 @@ export const CartModal: React.FC<CartModalProps> = ({
                 </button>
               </div>
             )}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 };

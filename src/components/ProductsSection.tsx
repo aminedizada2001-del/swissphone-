@@ -1,13 +1,13 @@
 import React from 'react';
 import { Product } from '../types';
 import { ProductCard3D } from './ProductCard3D';
-import { motion } from 'motion/react';
 
 interface ProductsSectionProps {
   products: Product[];
   onAddToCart: (product: Product) => void;
   onCallProduct: (product: Product) => void;
   onViewDetails: (product: Product) => void;
+  onResetFilter?: () => void;
 }
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({
@@ -21,26 +21,11 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
     return `DA ${price.toLocaleString('en-US')}`;
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  };
-
   return (
     <section id="products-section" className="w-full bg-[#FAF8F5] pt-2 pb-10 px-4 sm:px-6" dir="rtl">
       <div className="max-w-5xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-6">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#1F1A17] tracking-tight mb-2">
             أحدث المنتجات
           </h2>
@@ -52,16 +37,12 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
           </div>
         </div>
 
-        {/* 2-Column Grid with 3D Depth matching Screenshots 2 & 3 */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-50px" }}
+        {/* 2-Column Grid with 3D Depth matching Screenshots */}
+        <div 
           className="grid grid-cols-2 gap-3 sm:gap-4.5 w-full max-w-md mx-auto"
         >
           {products.map((product) => (
-            <motion.div key={product.id} variants={itemVariants}>
+            <div key={product.id}>
               <ProductCard3D
                 product={product}
                 onAddToCart={onAddToCart}
@@ -69,11 +50,13 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                 onViewDetails={onViewDetails}
                 formatPriceDA={formatPriceDA}
               />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 };
+
+
 

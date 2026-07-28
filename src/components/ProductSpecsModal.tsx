@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { X, ShoppingCart, Phone } from 'lucide-react';
 import { Product } from '../types';
-import { motion } from 'motion/react';
 
 interface ProductSpecsModalProps {
   product: Product | null;
@@ -34,25 +33,17 @@ export const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 1 }}
-      transition={{ duration: 0 }}
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal Content */}
-      <motion.div
-        initial={{ opacity: 1, scale: 1 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0 }}
+      <div
         className="relative w-[90%] max-w-[320px] bg-[#FAF8F5] rounded-3xl shadow-2xl overflow-hidden"
         dir="rtl"
       >
@@ -141,7 +132,7 @@ export const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({
             </button>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Instagram, Lock, Phone, MapPin } from 'lucide-react';
-import { subscribeSettings } from '../lib/storeService';
 import { InstagramModal } from './InstagramModal';
 
 interface FooterProps {
@@ -40,7 +39,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
       }
     }
 
-    const unsubscribe = subscribeSettings((remoteSettings) => {
+    let unsubscribe = () => {};
+    import('../lib/storeService').then(({ subscribeSettings }) => {
+      unsubscribe = subscribeSettings((remoteSettings) => {
       if (remoteSettings && remoteSettings.storeInfo) {
         setSettings({
           storeInfo: {
@@ -59,6 +60,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
       }
     });
 
+    });
     return () => unsubscribe();
   }, []);
 

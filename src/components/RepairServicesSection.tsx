@@ -1,7 +1,6 @@
 import React from 'react';
 import { Smartphone, Battery, Camera, Clock, Tag, Wrench, ChevronLeft, Cpu, Wifi, Volume2, Mic, Droplet, Zap, ShieldCheck, MonitorSmartphone } from 'lucide-react';
 import { RepairService } from '../types';
-import { motion } from 'motion/react';
 
 interface RepairServicesSectionProps {
   services: RepairService[];
@@ -27,9 +26,22 @@ const renderIcon = (name: string) => {
 
 export const RepairServicesSection: React.FC<RepairServicesSectionProps> = ({ services }) => {
   const handleBookRepair = (serviceTitle: string) => {
-    // You can hook this up to open a call modal or whatsapp
-    const message = encodeURIComponent(`مرحباً، أود حجز موعد لخدمة: ${serviceTitle}`);
-    window.open(`https://wa.me/213550560105?text=${message}`, '_blank');
+    let waNum = '213550560105';
+    try {
+      const saved = localStorage.getItem('siteSettings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.socialLinks?.whatsapp) {
+          const clean = parsed.socialLinks.whatsapp.replace(/\D/g, '');
+          if (clean) waNum = clean;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    const message = encodeURIComponent(`مرحباً Swiss Phone، أود حجز موعد لخدمة الصيانة: ${serviceTitle}`);
+    window.open(`https://wa.me/${waNum}?text=${message}`, '_blank');
   };
 
   const containerVariants = {
@@ -48,7 +60,7 @@ export const RepairServicesSection: React.FC<RepairServicesSectionProps> = ({ se
   };
 
   return (
-    <section className="w-full bg-[#FAF8F5] py-10 px-4 sm:px-6" dir="rtl">
+    <section id="services-section" className="w-full bg-[#FAF8F5] py-10 px-4 sm:px-6 scroll-mt-6" dir="rtl">
       <div className="max-w-5xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-8">
@@ -68,15 +80,11 @@ export const RepairServicesSection: React.FC<RepairServicesSectionProps> = ({ se
 
         {/* Services Card */}
         <div className="bg-[#FFFDF9] border border-[#EAD8B1] rounded-[32px] p-4 sm:p-6 shadow-sm w-full max-w-md mx-auto relative overflow-hidden">
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
+          <div
             className="flex flex-col gap-6 relative z-10"
           >
             {services.map((service, index) => (
-              <motion.div key={service.id} variants={itemVariants} className="flex flex-col gap-4">
+              <div key={service.id} className="flex flex-col gap-4">
                 {/* Header: Title and Icon */}
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 bg-[#1C1713] rounded-2xl flex items-center justify-center shadow-md border border-[#C5A059]/20 flex-shrink-0">
@@ -110,9 +118,9 @@ export const RepairServicesSection: React.FC<RepairServicesSectionProps> = ({ se
                 {index !== services.length - 1 && (
                   <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#EAD8B1] to-transparent mt-2" />
                 )}
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

@@ -18,11 +18,11 @@ export const InstagramModal: React.FC<InstagramModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in"
       onClick={onClose}
     >
       <div 
-        className="bg-[#141416] border border-[#C5A059]/40 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative text-center text-white space-y-5"
+        className="bg-[#141416] border border-[#C5A059]/40 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative text-center text-white space-y-5 animate-scale-up"
         onClick={(e) => e.stopPropagation()}
         dir="rtl"
       >

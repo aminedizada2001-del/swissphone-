@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Product, RepairService } from '../types';
 import { Plus, Edit2, Trash2, X, Save, LogOut, Package, Wrench, Image as ImageIcon, Check, ChevronDown, Store, Key, Share2, Search, Copy, Upload } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { syncSettingsToFirebase, subscribeSettings } from '../lib/storeService';
+
 
 interface AdminDashboardProps {
   products: Product[];
@@ -255,7 +254,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       }
     }
 
-    const unsubscribe = subscribeSettings((remoteSettings) => {
+    let unsubscribe = () => {};
+    import('../lib/storeService').then(({ subscribeSettings }) => {
+      unsubscribe = subscribeSettings((remoteSettings) => {
       if (remoteSettings) {
         if (remoteSettings.storeInfo) {
           const info = { ...remoteSettings.storeInfo };
@@ -285,17 +286,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       }
     });
 
+    });
     return () => unsubscribe();
   }, []);
 
   const saveSettings = () => {
     const data = { storeInfo, adminPassword, socialLinks, landingImages };
     localStorage.setItem('siteSettings', JSON.stringify(data));
-    syncSettingsToFirebase(data);
-    setIsSaved(true);
-    setTimeout(() => {
-      setIsSaved(false);
-    }, 2500);
+    import('../lib/storeService').then(({ syncSettingsToFirebase }) => {
+      syncSettingsToFirebase(data);
+      setIsSaved(true);
+      setTimeout(() => {
+        setIsSaved(false);
+      }, 2500);
+    });
   };
 
   return (
@@ -317,8 +321,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Tabs */}
       <div className="flex gap-2 p-3 bg-[#FFFDF9] border-b border-[#EAD8B1]/50 shadow-sm sticky top-[76px] z-30">
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={() => setActiveTab('products')}
           className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
             activeTab === 'products' ? 'bg-[#C5A059] text-white shadow-md shadow-[#C5A059]/20' : 'bg-[#F7F2E8] text-[#8A6A29] hover:bg-[#EAD8B1]/40'
@@ -326,9 +329,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         >
           <Package className="w-4 h-4" />
           المنتجات
-        </motion.button>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+        </button>
+        <button
           onClick={() => setActiveTab('services')}
           className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
             activeTab === 'services' ? 'bg-[#C5A059] text-white shadow-md shadow-[#C5A059]/20' : 'bg-[#F7F2E8] text-[#8A6A29] hover:bg-[#EAD8B1]/40'
@@ -336,9 +338,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         >
           <Wrench className="w-4 h-4" />
           الخدمات
-        </motion.button>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+        </button>
+        <button
           onClick={() => setActiveTab('settings')}
           className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
             activeTab === 'settings' ? 'bg-[#C5A059] text-white shadow-md shadow-[#C5A059]/20' : 'bg-[#F7F2E8] text-[#8A6A29] hover:bg-[#EAD8B1]/40'
@@ -346,7 +347,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         >
           <Package className="w-4 h-4" />
           الإعدادات
-        </motion.button>
+        </button>
       </div>
 
       {/* Content Area */}
@@ -373,23 +374,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
         )}
 
-        <AnimatePresence mode="wait">
+        
           {activeTab === 'products' && (
-            <motion.div
+            <div
               key="tab-products"
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0 }}
             >
-              <motion.button
-                whileTap={{ scale: 0.97 }}
+              <button
                 onClick={handleAddProduct}
                 className="w-full bg-[#1C1713] text-[#F3E3C3] py-3.5 rounded-xl flex items-center justify-center gap-2 font-bold shadow-md hover:bg-[#2A231C] transition-colors border border-[#C5A059]/30 mb-4"
               >
                 <Plus className="w-5 h-5 text-[#E6C280]" />
                 إضافة منتج جديد
-              </motion.button>
+              </button>
 
               <div className="flex flex-col gap-3">
                 {products
@@ -424,53 +420,45 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
 
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <motion.button 
-                        whileTap={{ scale: 0.9 }} 
+                      <button 
                         onClick={() => handleDuplicateProduct(p)} 
                         className="p-2 bg-[#F7F2E8] rounded-lg text-[#8A6A29] hover:bg-[#EAD8B1] transition-colors"
                         title="نسخ المنتج"
                       >
                         <Copy className="w-3.5 h-3.5" />
-                      </motion.button>
-                      <motion.button 
-                        whileTap={{ scale: 0.9 }} 
+                      </button>
+                      <button 
                         onClick={() => handleEditProduct(p)} 
                         className="p-2 bg-[#F7F2E8] rounded-lg text-[#8A6A29] hover:bg-[#EAD8B1] transition-colors"
                         title="تعديل"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
-                      </motion.button>
-                      <motion.button 
-                        whileTap={{ scale: 0.9 }} 
+                      </button>
+                      <button 
                         onClick={() => handleDeleteProduct(p.id)} 
                         className="p-2 bg-red-50 rounded-lg text-red-500 hover:bg-red-100 transition-colors"
                         title="حذف"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
-                      </motion.button>
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           )}
 
           {activeTab === 'services' && (
-            <motion.div
+            <div
               key="tab-services"
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0 }}
             >
-              <motion.button
-                whileTap={{ scale: 0.97 }}
+              <button
                 onClick={handleAddService}
                 className="w-full bg-[#1C1713] text-[#F3E3C3] py-3.5 rounded-xl flex items-center justify-center gap-2 font-bold shadow-md hover:bg-[#2A231C] transition-colors border border-[#C5A059]/30 mb-4"
               >
                 <Plus className="w-5 h-5 text-[#E6C280]" />
                 إضافة خدمة جديدة
-              </motion.button>
+              </button>
               <div className="flex flex-col gap-3">
                 {services
                   .filter(s => !searchTerm || s.title.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -487,26 +475,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       </div>
                     </div>
                     <div className="flex flex-col gap-1.5 flex-shrink-0">
-                      <motion.button whileTap={{ scale: 0.9 }} onClick={() => handleEditService(s)} className="p-2 bg-[#F7F2E8] rounded-lg text-[#8A6A29] hover:bg-[#EAD8B1] transition-colors">
+                      <button onClick={() => handleEditService(s)} className="p-2 bg-[#F7F2E8] rounded-lg text-[#8A6A29] hover:bg-[#EAD8B1] transition-colors">
                         <Edit2 className="w-3.5 h-3.5" />
-                      </motion.button>
-                      <motion.button whileTap={{ scale: 0.9 }} onClick={() => handleDeleteService(s.id)} className="p-2 bg-red-50 rounded-lg text-red-500 hover:bg-red-100 transition-colors">
+                      </button>
+                      <button onClick={() => handleDeleteService(s.id)} className="p-2 bg-red-50 rounded-lg text-red-500 hover:bg-red-100 transition-colors">
                         <Trash2 className="w-3.5 h-3.5" />
-                      </motion.button>
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           )}
 
           {activeTab === 'settings' && (
-            <motion.div
+            <div
               key="tab-settings"
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0 }}
               className="space-y-3"
             >
             {/* 1. Store Info Accordion */}
@@ -522,20 +506,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                   <span>معلومات المحل</span>
                 </div>
-                <motion.div
-                  animate={{ rotate: openSections.store ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+                <div
                 >
                   <ChevronDown className="w-5 h-5 text-[#8A6A29]" />
-                </motion.div>
+                </div>
               </button>
-              <AnimatePresence initial={false}>
+              
                 {openSections.store && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  <div
                     className="overflow-hidden"
                   >
                     <div className="p-4 pt-1 space-y-3 border-t border-[#EAD8B1]/40">
@@ -552,9 +530,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <input placeholder="البريد الإلكتروني" value={storeInfo.email} onChange={e => setStoreInfo({...storeInfo, email: e.target.value})} className="w-full bg-[#F7F2E8] border border-[#EAD8B1] rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50" dir="ltr" />
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              
             </div>
 
             {/* 2. Admin Password Accordion */}
@@ -570,29 +548,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                   <span>كلمة سر الموقع</span>
                 </div>
-                <motion.div
-                  animate={{ rotate: openSections.password ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+                <div
                 >
                   <ChevronDown className="w-5 h-5 text-[#8A6A29]" />
-                </motion.div>
+                </div>
               </button>
-              <AnimatePresence initial={false}>
+              
                 {openSections.password && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  <div
                     className="overflow-hidden"
                   >
                     <div className="p-4 pt-1 border-t border-[#EAD8B1]/40">
                       <label className="block text-xs font-semibold text-[#8A6A29] mb-1">كلمة السر الجديدة</label>
                       <input type="password" placeholder="كلمة السر..." value={adminPassword} onChange={e => setAdminPassword(e.target.value)} className="w-full bg-[#F7F2E8] border border-[#EAD8B1] rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50" />
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              
             </div>
 
             {/* 3. Social & Maps Links Accordion */}
@@ -608,20 +580,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                   <span>روابط التواصل والموقع</span>
                 </div>
-                <motion.div
-                  animate={{ rotate: openSections.social ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+                <div
                 >
                   <ChevronDown className="w-5 h-5 text-[#8A6A29]" />
-                </motion.div>
+                </div>
               </button>
-              <AnimatePresence initial={false}>
+              
                 {openSections.social && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  <div
                     className="overflow-hidden"
                   >
                     <div className="p-4 pt-1 space-y-3 border-t border-[#EAD8B1]/40">
@@ -646,9 +612,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <input placeholder="تيك توك" value={socialLinks.tiktok} onChange={e => setSocialLinks({...socialLinks, tiktok: e.target.value})} className="w-full bg-[#F7F2E8] border border-[#EAD8B1] rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A059]/50" dir="ltr" />
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              
             </div>
 
             {/* 4. Landing Page Images Accordion */}
@@ -664,20 +630,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                   <span>صور الصفحة الرئيسية (Firebase)</span>
                 </div>
-                <motion.div
-                  animate={{ rotate: openSections.landingImages ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+                <div
                 >
                   <ChevronDown className="w-5 h-5 text-[#8A6A29]" />
-                </motion.div>
+                </div>
               </button>
-              <AnimatePresence initial={false}>
+              
                 {openSections.landingImages && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  <div
                     className="overflow-hidden"
                   >
                     <div className="p-4 pt-1 space-y-4 border-t border-[#EAD8B1]/40">
@@ -757,14 +717,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              
             </div>
             
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={saveSettings}
               className={`w-full py-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 overflow-hidden mt-4 ${
                 isSaved 
@@ -772,42 +730,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   : 'bg-[#C5A059] text-white hover:bg-[#A17C38] shadow-[#C5A059]/30'
               }`}
             >
-              <AnimatePresence mode="wait">
+              
                 {isSaved ? (
-                  <motion.div
+                  <div
                     key="saved"
-                    initial={{ scale: 0.6, opacity: 0, y: 10 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.6, opacity: 0, y: -10 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
                     className="flex items-center justify-center gap-2"
                   >
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: [0, 1.3, 1] }}
-                      transition={{ duration: 0.3 }}
+                    <div
                     >
                       <Check className="w-5 h-5 text-white stroke-[3]" />
-                    </motion.div>
+                    </div>
                     <span>تم حفظ التغييرات بنجاح!</span>
-                  </motion.div>
+                  </div>
                 ) : (
-                  <motion.div
+                  <div
                     key="save"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
                     className="flex items-center justify-center gap-2"
                   >
                     <Save className="w-5 h-5" />
                     <span>حفظ كل التغييرات</span>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
-            </motion.button>
-          </motion.div>
+              
+            </button>
+          </div>
         )}
-        </AnimatePresence>
+        
       </div>
 
       {/* Product Edit Modal */}

@@ -3,7 +3,6 @@ import { Award, ShieldCheck, Briefcase } from 'lucide-react';
 import goldIphone3D from '../assets/images/gold_iphone_3d_real_1785068896861.jpg';
 import seal3D from '../assets/images/swiss_seal_3d_real_1785068909694.jpg';
 import leatherCases3D from '../assets/images/leather_cases_3d_real_1785068922902.jpg';
-import { subscribeSettings } from '../lib/storeService';
 
 export const AuthenticitySection: React.FC = () => {
   const [images, setImages] = useState({
@@ -29,7 +28,9 @@ export const AuthenticitySection: React.FC = () => {
       }
     }
 
-    const unsubscribe = subscribeSettings((remoteSettings) => {
+    let unsubscribe = () => {};
+    import('../lib/storeService').then(({ subscribeSettings }) => {
+      unsubscribe = subscribeSettings((remoteSettings) => {
       if (remoteSettings && remoteSettings.landingImages) {
         setImages({
           certifiedIphones: remoteSettings.landingImages.certifiedIphones || goldIphone3D,
@@ -39,6 +40,7 @@ export const AuthenticitySection: React.FC = () => {
       }
     });
 
+    });
     return () => unsubscribe();
   }, []);
 

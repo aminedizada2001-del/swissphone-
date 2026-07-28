@@ -147,3 +147,19 @@ export async function syncSettingsToFirebase(settings: SiteSettings) {
     handleFirestoreError(error, OperationType.WRITE, 'settings/store');
   }
 }
+
+export async function updateProductInFirebase(product: Product) {
+  try {
+    await setDoc(doc(db, 'products', product.id), product, { merge: true });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, 'products');
+  }
+}
+
+export async function deleteProductFromFirebase(productId: string) {
+  try {
+    await deleteDoc(doc(db, 'products', productId));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, 'products');
+  }
+}

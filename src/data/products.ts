@@ -18,6 +18,8 @@ export const CATEGORIES: Category[] = [
   { id: 'iphone13', nameArabic: 'سلسلة iPhone 13', iconName: 'smartphone' },
   { id: 'samsung', nameArabic: 'سلسلة Samsung', iconName: 'smartphone' },
   { id: 'xiaomi', nameArabic: 'سلسلة Xiaomi', iconName: 'smartphone' },
+  { id: 'accessories', nameArabic: 'إكسسوارات', iconName: 'headphones' },
+  { id: 'services', nameArabic: 'خدمات الصيانة', iconName: 'wrench' },
 ];
 
 export const PRODUCTS: Product[] = [

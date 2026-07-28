@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Product, RepairService } from '../types';
 import { PRODUCTS } from '../data/products';
 import { INITIAL_SERVICES } from '../data/services';
-import { subscribeProducts, subscribeServices, syncProductsToFirebase, syncServicesToFirebase } from '../lib/storeService';
 
 export function useStoreData() {
   const [products, setProducts] = useState<Product[]>(() => {
@@ -21,26 +20,37 @@ export function useStoreData() {
     return INITIAL_SERVICES;
   });
 
-  // Subscribe to Firebase realtime updates
   useEffect(() => {
-    const unsubProducts = subscribeProducts((remoteProducts) => {
-      if (remoteProducts && remoteProducts.length > 0) {
-        setProducts(remoteProducts);
-        localStorage.setItem('swiss_products', JSON.stringify(remoteProducts));
-      } else {
-        // If remote database is empty, seed it with default products
-        syncProductsToFirebase(PRODUCTS);
-      }
-    });
+    let unsubProducts = () => {};
+    let unsubServices = () => {};
 
-    const unsubServices = subscribeServices((remoteServices) => {
-      if (remoteServices && remoteServices.length > 0) {
-        setServices(remoteServices);
-        localStorage.setItem('swiss_services', JSON.stringify(remoteServices));
-      } else {
-        // Seed default services
-        syncServicesToFirebase(INITIAL_SERVICES);
-      }
+    // Dynamically import Firebase to avoid blocking initial render
+    import('../lib/storeService').then(({ subscribeProducts, subscribeServices, syncProductsToFirebase, syncServicesToFirebase }) => {
+      unsubProducts = subscribeProducts((remoteProducts) => {
+        if (remoteProducts && remoteProducts.length > 0) {
+          const currentStr = localStorage.getItem('swiss_products');
+          const remoteStr = JSON.stringify(remoteProducts);
+          if (currentStr !== remoteStr) {
+            setProducts(remoteProducts);
+            localStorage.setItem('swiss_products', remoteStr);
+          }
+        } else {
+          syncProductsToFirebase(PRODUCTS);
+        }
+      });
+
+      unsubServices = subscribeServices((remoteServices) => {
+        if (remoteServices && remoteServices.length > 0) {
+          const currentStr = localStorage.getItem('swiss_services');
+          const remoteStr = JSON.stringify(remoteServices);
+          if (currentStr !== remoteStr) {
+            setServices(remoteServices);
+            localStorage.setItem('swiss_services', remoteStr);
+          }
+        } else {
+          syncServicesToFirebase(INITIAL_SERVICES);
+        }
+      });
     });
 
     return () => {
@@ -49,15 +59,27 @@ export function useStoreData() {
     };
   }, []);
 
-  const saveProducts = (newProducts: Product[], removedId?: string) => {
+  const saveProducts = async (newProducts: Product[], removedId?: string) => {
     setProducts(newProducts);
     localStorage.setItem('swiss_products', JSON.stringify(newProducts));
+    
+    // Find the difference to optimize writes
+    const { syncProductsToFirebase, updateProductInFirebase, deleteProductFromFirebase } = await import('../lib/storeService');
+    
+    if (removedId) {
+      deleteProductFromFirebase(removedId);
+      return;
+    }
+    
+    // Simple heuristic: if lengths match, it's an update. If new is larger, it's an add.
+    // For a robust approach, we just rewrite all for now to avoid logic bugs, or we can find the single changed item.
     syncProductsToFirebase(newProducts, removedId);
   };
 
-  const saveServices = (newServices: RepairService[], removedId?: string) => {
+  const saveServices = async (newServices: RepairService[], removedId?: string) => {
     setServices(newServices);
     localStorage.setItem('swiss_services', JSON.stringify(newServices));
+    const { syncServicesToFirebase } = await import('../lib/storeService');
     syncServicesToFirebase(newServices, removedId);
   };
 
@@ -68,4 +90,3 @@ export function useStoreData() {
     saveServices
   };
 }
-
