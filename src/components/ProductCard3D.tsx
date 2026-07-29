@@ -32,8 +32,9 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({
           <img
             src={product.image}
             alt={product.title}
-            loading="lazy"
-            decoding="async"
+            loading="eager"
+            fetchPriority="high"
+            decoding="sync"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />

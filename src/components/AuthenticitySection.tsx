@@ -69,6 +69,9 @@ export const AuthenticitySection: React.FC = () => {
               <img
                 src={images.certifiedIphones}
                 alt="iPhones Certifiés 3D"
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
                 className="w-full h-full object-cover rounded-md transition-transform duration-500 hover:scale-110"
                 referrerPolicy="no-referrer"
               />
@@ -87,6 +90,9 @@ export const AuthenticitySection: React.FC = () => {
               <img
                 src={images.originalSeal}
                 alt="Sceau de Garantie Authentique 3D"
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
                 className="w-full h-full object-contain drop-shadow-lg transition-transform duration-500 hover:scale-115"
                 referrerPolicy="no-referrer"
               />
@@ -105,6 +111,9 @@ export const AuthenticitySection: React.FC = () => {
               <img
                 src={images.leatherCases}
                 alt="Accessoires Premium 3D"
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
                 className="w-full h-full object-cover rounded-md transition-transform duration-500 hover:scale-110"
                 referrerPolicy="no-referrer"
               />

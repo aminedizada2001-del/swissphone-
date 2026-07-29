@@ -81,7 +81,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <img
           src={heroBannerImg}
           alt="SWISS PHONE Header Banner"
-          decoding="async"
+          loading="eager"
+          fetchPriority="high"
+          decoding="sync"
           className="w-full h-full object-cover object-center brightness-105 contrast-105"
           referrerPolicy="no-referrer"
         />

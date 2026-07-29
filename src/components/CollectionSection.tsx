@@ -57,6 +57,9 @@ export const CollectionSection: React.FC = () => {
               <img
                 src={item.img}
                 alt={item.alt}
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 style={{ transform: 'translateZ(10px)' }}
                 referrerPolicy="no-referrer"
