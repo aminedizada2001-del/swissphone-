@@ -63,7 +63,6 @@ export function useStoreData() {
     setProducts(newProducts);
     localStorage.setItem('swiss_products', JSON.stringify(newProducts));
     
-    // Find the difference to optimize writes
     const { syncProductsToFirebase, updateProductInFirebase, deleteProductFromFirebase } = await import('../lib/storeService');
     
     if (removedId) {
@@ -71,16 +70,42 @@ export function useStoreData() {
       return;
     }
     
-    // Simple heuristic: if lengths match, it's an update. If new is larger, it's an add.
-    // For a robust approach, we just rewrite all for now to avoid logic bugs, or we can find the single changed item.
-    syncProductsToFirebase(newProducts, removedId);
+    // Find modified or added items
+    const oldMap = new Map(products.map(p => [p.id, p]));
+    const changed = newProducts.filter(p => {
+      const oldP = oldMap.get(p.id);
+      return !oldP || JSON.stringify(oldP) !== JSON.stringify(p);
+    });
+
+    if (changed.length === 1) {
+      updateProductInFirebase(changed[0]);
+    } else {
+      syncProductsToFirebase(newProducts);
+    }
   };
 
   const saveServices = async (newServices: RepairService[], removedId?: string) => {
     setServices(newServices);
     localStorage.setItem('swiss_services', JSON.stringify(newServices));
-    const { syncServicesToFirebase } = await import('../lib/storeService');
-    syncServicesToFirebase(newServices, removedId);
+    
+    const { syncServicesToFirebase, updateServiceInFirebase, deleteServiceFromFirebase } = await import('../lib/storeService');
+    
+    if (removedId) {
+      deleteServiceFromFirebase(removedId);
+      return;
+    }
+
+    const oldMap = new Map(services.map(s => [s.id, s]));
+    const changed = newServices.filter(s => {
+      const oldS = oldMap.get(s.id);
+      return !oldS || JSON.stringify(oldS) !== JSON.stringify(s);
+    });
+
+    if (changed.length === 1) {
+      updateServiceInFirebase(changed[0]);
+    } else {
+      syncServicesToFirebase(newServices);
+    }
   };
 
   return {
